@@ -1,24 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 
 <head>
     <meta charset="UTF-8">
     <title>{{ post.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap + Google Fonts -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 860px;
+        }
+
+        .navbar {
+            background-color: #ffffff !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
+        h1 {
+            font-weight: 700;
+            color: #222;
+        }
+
         pre {
-            background: #f8f9fa;
-            padding: 1em;
-            border-radius: 5px;
+            background: #f1f3f5;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .btn {
+            border-radius: 999px;
+        }
+
+        hr {
+            border-top: 1px solid #e0e0e0;
         }
     </style>
 </head>
 
-<body class="container mt-4">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+<body class="container py-4">
+    <!-- 顶部导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light mb-4 rounded-3">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">我的博客</a>
-            <div class="d-flex">
+
+            <div class="d-flex align-items-center ms-auto">
                 {% if current_user.is_authenticated %}
                 <span class="me-3">你好，{{ current_user.username }}</span>
                 <a href="{{ url_for('create') }}" class="btn btn-outline-success me-2">写文章</a>
@@ -31,20 +72,27 @@
         </div>
     </nav>
 
+    <!-- 标题与时间 -->
     <h1 class="mb-3">{{ post.title }}</h1>
     <p class="text-muted small">{{ post.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
     <hr>
-    <div class="mt-3">
+
+    <!-- 内容正文 -->
+    <div class="mt-4">
         {{ content_html | safe }}
     </div>
-    <hr>
-    <a href="{{ url_for('index') }}" class="btn btn-secondary">返回首页</a>
-    <a href="{{ url_for('edit', post_id=post.id) }}" class="btn btn-primary">编辑</a>
-    <form action="{{ url_for('delete', post_id=post.id) }}" method="POST" class="d-inline"
-        onsubmit="return confirm('确定要删除这篇文章吗？');">
-        <button type="submit" class="btn btn-danger">删除</button>
-    </form>
 
+    <hr class="my-5">
+
+    <!-- 操作按钮 -->
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">返回首页</a>
+        <a href="{{ url_for('edit', post_id=post.id) }}" class="btn btn-primary">编辑</a>
+        <form action="{{ url_for('delete', post_id=post.id) }}" method="POST" class="d-inline"
+            onsubmit="return confirm('确定要删除这篇文章吗？');">
+            <button type="submit" class="btn btn-danger">删除</button>
+        </form>
+    </div>
 </body>
 
 </html>
