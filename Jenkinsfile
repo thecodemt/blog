@@ -18,22 +18,17 @@ pipeline {
         stage('Test') {
             agent {
                 docker {
-                    image 'python:3.9'
-                    args '-v $WORKSPACE:/app -u $(id -u):$(id -g)'
+                    image 'python:3.9'  // 使用 Python 3.8 的 Docker 镜像
+                    args '-u root'  // 以 root 身份运行容器
                 }
             }
             steps {
-                sh '''
-                    cd /app
-                    mkdir -p test-results
-                    pip install --user -r requirements.txt
-                    python -m pytest tests/ --junitxml=test-results/junit.xml
-                '''
-            }
-            post {
-                always {
-                    junit 'test-results/junit.xml'
-                }
+                // 安装依赖
+                sh 'pip install --upgrade pip'
+                sh 'pip install -r requirements.txt'
+                
+                // 运行测试
+                sh 'pytest tests/'
             }
         }
         
