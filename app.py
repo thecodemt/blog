@@ -1,8 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Post
 from forms import PostForm
-from flask import abort
 import markdown
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import User
@@ -19,6 +18,10 @@ app.config['SECRET_KEY'] = 'your-secret-key'  # 用于CSRF防护
 
 # 初始化数据库
 db.init_app(app)
+
+# 用户最大注册数量
+MAX_USERS = 100
+MAX_POSTS = 1000
 
 @app.template_filter('markdown')
 def markdown_filter(text):
@@ -54,6 +57,11 @@ def post_detail(post_id):
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
 def create():
+    # 检查是否超过最大文章数
+    post_count = Post.query.count()
+    if post_count >= MAX_POSTS:
+        return "文章数已达到最大值，无法再发布新文章！"
+
     form = PostForm()
     if form.validate_on_submit():
         new_post = Post(title=form.title.data, content=form.content.data, author=current_user)
@@ -61,7 +69,6 @@ def create():
         db.session.commit()
         return redirect(url_for('index'))
     return render_template('create.html', form=form)
-
 
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
 @login_required
@@ -91,6 +98,11 @@ def delete(post_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # 检查是否超过最大用户数
+    user_count = User.query.count()
+    if user_count >= MAX_USERS:
+        return "用户数已达到最大值，无法再注册新用户！"
+
     form = RegisterForm()
     if form.validate_on_submit():
         if User.query.filter_by(username=form.username.data).first():
