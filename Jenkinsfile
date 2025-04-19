@@ -19,13 +19,14 @@ pipeline {
             agent {
                 docker {
                     image 'python:3.9'
-                    args '-v $WORKSPACE:/app'
+                    args '-v $WORKSPACE:/app -u $(id -u):$(id -g)'
                 }
             }
             steps {
                 sh '''
                     cd /app
-                    pip install -r requirements.txt
+                    mkdir -p test-results
+                    pip install --user -r requirements.txt
                     python -m pytest tests/ --junitxml=test-results/junit.xml
                 '''
             }
