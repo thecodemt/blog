@@ -12,4 +12,8 @@ EXPOSE 5000
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=production
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+# 创建启动脚本
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]
