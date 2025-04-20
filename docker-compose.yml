@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nginx:
-    image: ${DOCKER_USERNAME}/nginx:1.0
+    image: ${DOCKER_USERNAME}/nginx:2.0
     ports:
       - "80:80"
       - "443:443"
